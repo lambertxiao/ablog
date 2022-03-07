@@ -10,6 +10,8 @@ ShowToc: true
 TocOpen: true
 ---
 
+> 以下图片截自 `http://thesecretlivesofdata.com/raft/`
+
 ## 缘起
 
 当我们服务端只有一个节点的时候，任何数据的改动逻辑都是简单的，当客户端给服务器发消息，只要服务器接收并写下了这条消息，那么该消息就算发送成功

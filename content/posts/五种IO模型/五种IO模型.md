@@ -1,9 +1,13 @@
 ---
-layout: post
+author: "Lambert Xiao"
 title: "五种IO模型"
-date: 2019-12-27
-tags: [Linux]
-comments: false
+date: "2019-12-27"
+summary: "同步异步、阻塞非阻塞，傻傻分不清"
+tags: ["IO模型"]
+categories: ["IO模型"]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
 ---
 
 # 五种IO模型
