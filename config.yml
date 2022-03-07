@@ -1,4 +1,4 @@
-baseURL: "https://lambertxiao.github.io/blog"
+baseURL: "https://lambertxiao.github.io"
 title: Lambert's blog
 paginate: 20
 theme: PaperMod

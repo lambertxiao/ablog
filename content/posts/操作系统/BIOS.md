@@ -13,4 +13,4 @@ TocOpen: true
 
 # BIOS
 
-![](./BIOS.png)
+![](../BIOS.png)
