@@ -24,7 +24,7 @@ TocOpen: true
 
 ## MPG模型概览
 
-![MPG模型图](./MPG模型图.jpeg)
+![MPG模型图](../MPG模型图.jpeg)
 
 如图所示，
 
