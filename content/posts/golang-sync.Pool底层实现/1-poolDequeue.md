@@ -1,8 +1,8 @@
 ---
 author: "Lambert Xiao"
-title: "Golang-Sync.Pool之poolChain"
+title: "Golang-sync.Pool结构之poolDequeue"
 date: "2022-03-09"
-summary: ""
+summary: "环形队列，无锁，CAS"
 tags: ["golang"]
 categories: [""]
 series: ["Themes Guide"]
@@ -10,7 +10,9 @@ ShowToc: true
 TocOpen: true
 ---
 
-poolDequeue是一个无锁的固定大小的双端队列，它支持单生产者，多消费者。生产者头部push或pop数组，消费者在尾部pop数据。
+## poolDequeue
+
+poolDequeue是一个无锁的固定大小的环形队列，它支持单生产者，多消费者。生产者在头部push或pop元素，消费者在尾部pop元素。
 
 ```go
 type poolDequeue struct {
@@ -46,9 +48,9 @@ type eface struct {
 }
 ```
 
-headTail是个64位无符号数，前32位放置head的下标，后32位放置tail的下表。head表示下一个该被填充的slot下标，tail表示队列里的最老元素所在下标。
-
-vals是一个环形缓冲区，可以存放interface{}值。
+1. headTail是个64位无符号数，前32位放置head的下标，后32位放置tail的下标。
+2. head表示下一个该被填充的slot下标，tail表示队列里的最老元素所在下标。
+3. vals是一个环形缓冲区，可以存放interface{}值。
 
 ```go
 const dequeueBits = 32
@@ -77,7 +79,11 @@ func (d *poolDequeue) pack(head, tail uint32) uint64 {
 	return (uint64(head) << dequeueBits) |
 		uint64(tail&mask)
 }
+```
 
+unpack和pack是一对相反的操作，用来得到head和tail指针
+
+```go
 // pushHead adds val at the head of the queue. It returns false if the
 // queue is full. It must only be called by a single producer.
 func (d *poolDequeue) pushHead(val interface{}) bool {
@@ -112,7 +118,16 @@ func (d *poolDequeue) pushHead(val interface{}) bool {
 	atomic.AddUint64(&d.headTail, 1<<dequeueBits)
 	return true
 }
+```
 
+1. 通过原子操作得到ptrs，进而得到head和tail指针
+2. 当tail + vals长度 = head时，表示队列已满
+3. 通过位操作计算出当前要插入的元素落在哪个slot
+4. 如果slot的type非空，说明该slot还没有被popTail release，实际上deque还是满的；所以直接return false;
+5. 插入的值更新到slot指针指向的值
+6. 原子自加head
+
+```go
 // popHead removes and returns the element at the head of the queue.
 // It returns false if the queue is empty. It must only be called by a
 // single producer.
@@ -147,7 +162,17 @@ func (d *poolDequeue) popHead() (interface{}, bool) {
 	*slot = eface{}
 	return val, true
 }
+```
 
+1. 原子读取headTail的值，得到head和tail
+2. 根据tail == head，检查队列是否为空
+3. head--
+4. 计算出新的ptrs
+5. 通过CAS更新headTail的值
+6. 如果成功更新则拿到head位置的slot，否则继续for循环
+7. 取出slot指针指向的值，并返回
+
+```go
 // popTail removes and returns the element at the tail of the queue.
 // It returns false if the queue is empty. It may be called by any
 // number of consumers.
@@ -191,3 +216,18 @@ func (d *poolDequeue) popTail() (interface{}, bool) {
 	return val, true
 }
 ```
+
+1. popTail会被多个consumer一起调用
+2. 原子读取headTail的值，得到head和tail
+3. 根据tail == head，检查队列是否为空
+4. tail+1并计算出新的ptrs
+5. 通过CAS更新headTail的值，更新成功则取到tail对应的slot，否则继续for循环
+6. 将slot的val和type都清为nil, 告诉pushHead, slot我们已经使用完了，pushHead可以往里面填充数据了
+
+## 总结
+
+1. poolDequeue是一个双端环形队列
+2. poolDequeue是固定大小的
+3. pushHead和popHead只由单个Producer来调用
+4. popTail会由多个consumer来调用
+5. poolDequeue无锁，操作都用的是CAS
