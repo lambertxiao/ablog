@@ -56,8 +56,8 @@ params:
   ShowBreadCrumbs: true
   ShowCodeCopyButtons: true
   ShowToc: true
-  # comments: false
   images: ["papermod-cover.png"]
+  comments: true
 
   profileMode:
     enabled: false
@@ -88,21 +88,21 @@ params:
     Text: "Suggest Changes" # edit text
     appendFilePath: true # to append file path to Edit link
 
-  # label:
-  #     text: "Home"
-  #     icon: icon.png
-  #     iconHeight: 35
+  label:
+    text: "My Blog"
+    icon: /avatar.jpeg
+    iconHeight: 35
 
   # analytics:
   #     google:
   #         SiteVerificationTag: "XYZabc"
 
-  # assets:
-  #     favicon: "<link / abs url>"
-  #     favicon16x16: "<link / abs url>"
-  #     favicon32x32: "<link / abs url>"
-  #     apple_touch_icon: "<link / abs url>"
-  #     safari_pinned_tab: "<link / abs url>"
+  assets:
+      favicon: "/avatar.jpeg"
+      # favicon16x16: "<link / abs url>"
+      # favicon32x32: "<link / abs url>"
+      # apple_touch_icon: "<link / abs url>"
+      # safari_pinned_tab: "<link / abs url>"
 
   # cover:
   #     hidden: true # hide everywhere but not in structured data
@@ -158,3 +158,5 @@ services:
     disableInlineCSS: true
   twitter:
     disableInlineCSS: true
+
+disqusShortname: disqus_KY25sRiRtb
