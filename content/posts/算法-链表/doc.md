@@ -435,3 +435,319 @@ func findMid(head *ListNode, tail *ListNode) *ListNode {
     return s
 }
 ```
+
+### 剑指 Offer 22. 链表中倒数第k个节点
+
+[剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。
+
+例如，一个链表有 6 个节点，从头节点开始，它们的值依次是 1、2、3、4、5、6。这个链表的倒数第 3 个节点是值为 4 的节点。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+    if head == nil {
+        return nil
+    }
+    
+    p, q := head, head
+    i := 0
+
+    for i < k {
+        if q == nil {
+            break
+        }
+        q = q.Next
+        i++
+    }
+
+    if i < k {
+        return nil
+    }
+
+    for q != nil {
+        p = p.Next
+        q = q.Next
+    }
+
+    return p
+}
+```
+
+### 重排链表
+
+[143. 重排链表](https://leetcode-cn.com/problems/reorder-list/)
+给定一个单链表 L 的头节点 head ，单链表 L 表示为：
+
+L0 → L1 → … → Ln - 1 → Ln
+请将其重新排列后变为：
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reorderList(head *ListNode) {
+    if head == nil {
+        return
+    }
+    mid := middleNode(head)
+    nhead := reverseList(mid.Next)
+    mid.Next = nil // 断掉
+    mergeList(head, nhead)
+    return 
+}
+
+func mergeList(l1, l2 *ListNode) {
+    for l1 != nil && l2 != nil {
+        t1 := l1.Next
+        t2 := l2.Next
+
+        l1.Next = l2
+        l1 = t1
+
+        l2.Next = t1
+        l2 = t2
+    }
+}
+
+func middleNode(head *ListNode) *ListNode {
+    f, s := head, head
+    for f != nil && f.Next != nil {
+        f = f.Next.Next
+        s = s.Next
+    }
+    return s
+}
+
+func reverseList(head *ListNode) *ListNode {
+    if head == nil {
+        return nil
+    }
+    var pre *ListNode
+    curr := head
+
+    for curr != nil {
+        t := curr.Next
+        curr.Next = pre
+        pre = curr
+        curr = t
+    }
+    return pre
+}
+```
+### 138. 复制带随机指针的链表
+
+[138. 复制带随机指针的链表](https://leetcode-cn.com/problems/copy-list-with-random-pointer/)
+给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+
+构造这个链表的 [深拷贝](https://baike.baidu.com/item/%E6%B7%B1%E6%8B%B7%E8%B4%9D/22785317?fr=aladdin)。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。
+
+例如，如果原链表中有 X 和 Y 两个节点，其中 X.random --> Y 。那么在复制链表中对应的两个节点 x 和 y ，同样有 x.random --> y 。
+
+返回复制链表的头节点。
+
+用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：
+
+val：一个表示 Node.val 的整数。
+random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。
+你的代码 只 接受原链表的头节点 head 作为传入参数。
+
+```go
+/**
+ * Definition for a Node.
+ * type Node struct {
+ *     Val int
+ *     Next *Node
+ *     Random *Node
+ * }
+ */
+
+func copyRandomList(head *Node) *Node {
+    curr := head
+    // 很妙的解法，原先A->B->C，先复制一份节点为A->A'->B->B'->C->C'
+    for curr != nil {
+        curr.Next = &Node{Val: curr.Val, Next: curr.Next}
+        curr = curr.Next.Next
+    }
+    curr = head
+    // 接上random节点
+    for curr != nil {
+        // 如果原先节点存在random节点
+        if curr.Random != nil {
+            // 新的random节点一定在原先的random节点后面
+            curr.Next.Random = curr.Random.Next
+        }
+        curr = curr.Next.Next
+    }
+
+    dummy := &Node{}
+    ncurr := dummy
+    // 将链表拆分
+    curr = head
+    for curr != nil {
+        ncurr.Next = curr.Next
+        ncurr = ncurr.Next
+
+        curr.Next = curr.Next.Next
+        curr = curr.Next
+    }
+
+    return dummy.Next
+}
+```
+
+### 328. 奇偶链表
+
+[328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别组合在一起，然后返回重新排序的列表。
+
+第一个节点的索引被认为是 奇数 ， 第二个节点的索引为 偶数 ，以此类推。
+
+请注意，偶数组和奇数组内部的相对顺序应该与输入时保持一致。
+
+你必须在 O(1) 的额外空间复杂度和 O(n) 的时间复杂度下解决这个问题。
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null) {
+            return head;
+        }
+        
+        ListNode temp, tempNode = null;
+        ListNode newHead = head;
+        // 奇数位指针和偶数位指针
+        ListNode odd = newHead, even = newHead.next;
+        // 一开始是奇数
+        boolean isOdd = true;
+        head = even.next;
+        
+        if (head.next == null) {
+            temp = odd.next;
+            odd.next = head;
+            temp.next = head.next;
+            head.next = temp;
+            
+            return odd;
+        }
+           
+        while (head != null) {
+            temp = head.next;
+            head.next = null;
+            
+            // 如果是奇数
+            if (isOdd) {
+                tempNode = odd.next;
+                odd.next = head;
+                odd = odd.next;
+                odd.next = tempNode;
+            } else {
+                even.next = head;
+                even = even.next;
+            }
+            
+            isOdd = !isOdd;
+            head = temp;
+        }
+        
+        return newHead;
+    }
+}
+```
+
+### 83. 删除排序链表中的重复元素
+
+[83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
+给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        
+        ListNode p = head, q = head.next;
+        
+        while (q != null) {
+            if (q.val == p.val) {
+                q = q.next;
+                
+                if (q == null) {
+                    p.next = null;
+                }
+                
+                continue;
+            }
+            
+            p.next = q;
+            p = q;
+            q = q.next;
+        }
+        
+        return head;
+    }
+}
+```
+
+### 82. 删除排序链表中的重复元素 II
+
+[82. 删除排序链表中的重复元素 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/)
+给定一个已排序的链表的头 head ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func deleteDuplicates(head *ListNode) *ListNode {
+    dummy := &ListNode{Val: -101}
+    dummy.Next = head
+    curr := dummy
+
+    for curr.Next != nil && curr.Next.Next != nil {
+        if curr.Next.Val == curr.Next.Next.Val {
+            x := curr.Next.Val 
+            for curr.Next != nil && curr.Next.Val == x {
+                curr.Next = curr.Next.Next
+            }
+        } else {
+            curr = curr.Next
+        }
+    }
+
+    return dummy.Next
+}
+```

@@ -10,6 +10,8 @@ ShowToc: true
 TocOpen: true
 ---
 
+### 200. 岛屿数量
+
 [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
 
@@ -51,5 +53,74 @@ func numIslands(grid [][]byte) int {
         }
     }
     return cnt
+}
+```
+
+### 301. 删除无效的括号
+
+[301. 删除无效的括号](https://leetcode-cn.com/problems/remove-invalid-parentheses/)
+给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。
+
+返回所有可能的结果。答案可以按 任意顺序 返回。
+
+```go
+func removeInvalidParentheses(s string) []string {
+    ans := []string{}
+    if s == "" {
+        return ans
+    }
+
+    q := []string{}
+    visit := make(map[string]bool)
+
+    q = append(q, s)
+
+    // 广度搜索，从长字符串到短字符串搜索，由于求的是最小的更改，所以同一层上如果已经找到了合法字符串
+    // 则不需要往下执行
+    isFound := false
+
+    for len(q) != 0 {
+        ns := q[0]
+        q = q[1:]
+
+        if isValid(ns) {
+            ans = append(ans, ns)
+            isFound = true
+        }
+
+        if isFound {
+            continue
+        }
+        for i, c := range ns {
+            if c >= 'a' && c <= 'z' {
+                continue
+            }
+            // 删除第i个元素
+            nns := ns[:i] + ns[i+1:]
+
+            if !visit[nns] {
+                q = append(q, nns)
+                visit[nns] = true
+            }
+        }
+    }
+
+    return ans
+}
+
+func isValid(s string) bool {
+    lb := 0
+    for _, c := range s {
+        if c == '(' {
+            lb++
+        }
+        if c == ')' {
+            if lb == 0 {
+                return false
+            }
+            lb--
+        }
+    }
+    return lb == 0
 }
 ```

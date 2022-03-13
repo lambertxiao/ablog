@@ -301,6 +301,41 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 }
 ```
 
+### 106. 从中序与后序遍历序列构造二叉树
+
+[106. 从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+给定两个整数数组 inorder 和 postorder ，其中 inorder 是二叉树的中序遍历， postorder 是同一棵树的后序遍历，请你构造并返回这颗 二叉树 。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func buildTree(inorder []int, postorder []int) *TreeNode {
+    if len(inorder) == 0 {
+        return nil
+    }
+
+    rootVal := postorder[len(postorder)-1]
+    idx := 0 // 左右子树分节点
+    for i, val := range inorder {
+        if val == rootVal {
+            idx = i
+            break
+        }
+    }
+
+    root := &TreeNode{Val: rootVal}
+    root.Left = buildTree(inorder[:idx], postorder[:idx])
+    root.Right = buildTree(inorder[idx+1:], postorder[idx:len(postorder)-1])
+    return root
+}
+```
+
 ### 104. 二叉树的最大深度
 
 [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
@@ -521,5 +556,83 @@ func inorderTraversal2(root *TreeNode) []int {
         }
     }
     return ans
+}
+```
+
+### 110. 平衡二叉树
+
+[110. 平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/)
+给定一个二叉树，判断它是否是高度平衡的二叉树。
+
+本题中，一棵高度平衡二叉树定义为：
+
+一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func isBalanced(root *TreeNode) bool {
+    h := height(root)
+    return h != -1
+}
+
+func height(root *TreeNode) int {
+    if root == nil { return 0 }
+    leftH := height(root.Left)
+    rightH := height(root.Right)
+
+    if leftH == -1 || rightH == -1 || abs(leftH - rightH) > 1 {
+        return -1 // -1代表不平衡，不需要再继续了
+    }
+
+    return max(leftH, rightH) + 1
+}
+```
+
+### 129. 求根节点到叶节点数字之和
+
+[129. 求根节点到叶节点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
+给你一个二叉树的根节点 root ，树中每个节点都存放有一个 0 到 9 之间的数字。
+每条从根节点到叶节点的路径都代表一个数字：
+
+例如，从根节点到叶节点的路径 1 -> 2 -> 3 表示数字 123 。
+计算从根节点到叶节点生成的 所有数字之和 。
+
+叶节点 是指没有子节点的节点。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func sumNumbers(root *TreeNode) int {
+    if root == nil { return 0 }
+
+    var dfs func(root *TreeNode, sum int) int
+    dfs = func(root *TreeNode, sum int) int {
+        if root == nil {
+            return 0
+        }
+        rootSum := root.Val + sum * 10
+        if root.Left == nil && root.Right == nil {
+            return rootSum
+        }
+
+        leftSum := dfs(root.Left, rootSum)
+        rightSum := dfs(root.Right, rootSum)
+
+        return leftSum + rightSum
+    }
+    return dfs(root, 0)
 }
 ```

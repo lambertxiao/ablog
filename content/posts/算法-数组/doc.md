@@ -251,6 +251,8 @@ func findUnsortedSubarray(nums []int) int {
 [448. 找到所有数组中消失的数字](https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/)
 给你一个含 n 个整数的数组 nums ，其中 nums[i] 在区间 [1, n] 内。请你找出所有在 [1, n] 范围内但没有出现在 nums 中的数字，并以数组的形式返回结果。
 
+负数标记法
+
 ```go
 func findDisappearedNumbers(nums []int) []int {
     for _, num := range nums {
@@ -270,6 +272,28 @@ func findDisappearedNumbers(nums []int) []int {
 func abs(x int) int {
     if x > 0 { return x }
     return -x
+}
+```
+
+### 442. 数组中重复的数据
+
+[442. 数组中重复的数据](https://leetcode-cn.com/problems/find-all-duplicates-in-an-array/)
+给你一个长度为 n 的整数数组 nums ，其中 nums 的所有整数都在范围 [1, n] 内，且每个整数出现 一次 或 两次 。请你找出所有出现 两次 的整数，并以数组形式返回。
+
+你必须设计并实现一个时间复杂度为 O(n) 且仅使用常量额外空间的算法解决此问题。
+
+```go
+func findDuplicates(nums []int) []int {
+    ans := []int{}
+    for _, num := range nums {
+        idx := abs(num)-1
+        if nums[idx] < 0 {
+            ans = append(ans, abs(num))
+        }
+        nums[idx] = -nums[idx]
+    }
+
+    return ans
 }
 ```
 
@@ -385,6 +409,36 @@ public void moveZeroes(int[] nums) {
     while (index < nums.length) {
         nums[index++] = 0;
     }
+}
+```
+### 74. 搜索二维矩阵
+
+[74. 搜索二维矩阵](https://leetcode-cn.com/problems/search-a-2d-matrix/)
+编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：
+
+每行中的整数从左到右按升序排列。
+每行的第一个整数大于前一行的最后一个整数。
+
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    m := len(matrix)
+    n := len(matrix[0])
+    i, j := 0, n - 1
+    
+    for i < m && j >= 0 {
+        val := matrix[i][j]
+        if val == target {
+            return true
+        }
+
+        if val > target {
+            j--
+        } else if val < target {
+            i++
+        }
+    }
+
+    return false
 }
 ```
 
