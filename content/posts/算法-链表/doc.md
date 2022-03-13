@@ -1,0 +1,437 @@
+---
+author: "Lambert Xiao"
+title: "算法-链表"
+date: "2022-03-13"
+summary: ""
+tags: ["算法"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
+---
+
+### 2. 两数相加
+
+[2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
+
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+### 206. 反转链表
+
+[206. 反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+
+
+```go
+func reverseList(head *ListNode) *ListNode {
+    // 双指针，pre和curr一前一后
+    var pre *ListNode
+    curr := head
+
+    for curr != nil {
+        tmp := curr.Next
+        curr.Next = pre
+        pre = curr
+        curr = tmp
+    }
+
+    return pre
+}
+
+func reverseList(head *ListNode) *ListNode {
+    if head == nil || head.Next == nil {
+        return head
+    }
+
+    nhead := reverseList(head.Next)
+    head.Next.Next = head // 先指向回自己建立联系
+    head.Next = nil // 再把多余的联系断掉
+
+    return nhead
+}
+```
+
+
+### 19. 删除链表的倒数第 N 个结点
+
+[19. 删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+```go
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    // 快慢指针
+    dummy := &ListNode{}
+    dummy.Next = head
+    s, f := dummy, dummy
+
+    // faster向前走n+1步，一会可以让slow停在想要删除的节点的前继节点上
+    for n >= 0 && f != nil {
+        f = f.Next
+        n--
+    }
+
+    for f != nil {
+        f = f.Next
+        s = s.Next
+    }
+
+    s.Next = s.Next.Next
+    return dummy.Next
+}
+```
+
+### 23. 合并K个升序链表
+
+[23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+```go
+func mergeKLists(lists []*ListNode) *ListNode {
+    h := hp{}
+    for _, node := range lists {
+        if node != nil {
+            heap.Push(&h, node)
+        }
+    }
+
+    dummy := &ListNode{}
+    curr := dummy
+    for len(h) != 0 {
+        node := heap.Pop(&h).(*ListNode)
+        curr.Next = node
+        curr = curr.Next
+        
+        if node.Next != nil {
+            heap.Push(&h, node.Next)
+        }
+    }
+    return dummy.Next
+}
+
+type hp []*ListNode
+
+func (h hp) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
+func (h hp) Less(i, j int) bool { return h[i].Val < h[j].Val }
+func (h hp) Len() int { return len(h) }
+func (h *hp) Push(x interface{}) { *h = append(*h, x.(*ListNode))}
+func (h *hp) Pop() interface{} {
+    old := *h
+    n := len(old)
+    e := old[n-1]
+    *h = old[:n-1]
+    return e
+}
+```
+
+### 21. 合并两个有序链表
+
+[21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+```go
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    }
+    if list2 == nil {
+        return list1
+    }
+    if list1.Val < list2.Val {
+        list1.Next = mergeTwoLists(list1.Next, list2)
+        return list1
+    }
+
+    list2.Next = mergeTwoLists(list2.Next, list1)
+    return list2
+}
+```
+
+### 24. 两两交换链表中的节点
+
+[24. 两两交换链表中的节点](https://leetcode-cn.com/problems/swap-nodes-in-pairs/)
+
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+
+```go
+func swapPairs(head *ListNode) *ListNode {
+    // 递归法：明确swapPairs的含义就是将给定的链表两两反转
+    if head == nil || head.Next == nil {
+        return head
+    }
+
+    // 将当前节点和后继节点反转
+    next := head.Next
+    // 除了第一个第二个节点外的节点继续去做递归反转，并接到head后面
+    head.Next = swapPairs(next.Next)
+    // 反转head和next
+    next.Next = head
+    return next
+}
+```
+### 25. K 个一组翻转链表
+
+[25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+
+给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+
+k 是一个正整数，它的值小于或等于链表的长度。
+
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+进阶：
+
+你可以设计一个只使用常数额外空间的算法来解决此问题吗？
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+```go
+func reverseKGroup(head *ListNode, k int) *ListNode {
+    start, end := head, head
+    for i := 0; i < k; i++ {
+        if end == nil {
+            return head // 不足k个
+        }
+        end = end.Next
+    }
+
+    newHead := reverse(start, end)
+    start.Next = reverseKGroup(end, k)
+
+    return newHead
+}
+
+func reverse(start *ListNode, end *ListNode) *ListNode {
+    var pre *ListNode
+    curr := start
+    for curr != end {
+        t := curr.Next
+        curr.Next = pre
+        pre = curr
+        curr = t
+    }
+    return pre
+}
+```
+
+### 234. 回文链表
+
+[234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+
+```go
+func isPalindrome(head *ListNode) bool {
+    slow, faster := head, head
+
+    for faster != nil && faster.Next != nil {
+        slow = slow.Next
+        faster = faster.Next.Next
+    }
+
+    left := head 
+    right := reverse(slow)
+
+    for left != nil && right != nil {
+        if left.Val != right.Val {
+            return false
+        }
+        left = left.Next
+        right = right.Next
+    }
+    return true
+}
+
+func reverse(head *ListNode) *ListNode {
+    var pre *ListNode
+    
+    for head != nil {
+        next := head.Next
+        head.Next = pre
+        pre = head
+        head = next
+    }
+
+    return pre
+}
+```
+
+### 160. 相交链表
+
+[160. 相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+
+```go
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    if headA == nil || headB == nil { return nil }
+    pa, pb := headA, headB
+
+    for pa != pb {
+        if pa == nil {
+            pa = headB
+        } else {
+            pa = pa.Next
+        }
+
+        if pb == nil {
+            pb = headA
+        } else {
+            pb = pb.Next
+        }
+    }
+    return pa
+}
+```
+
+### 141. 环形链表
+
+[141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+给你一个链表的头节点 head ，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。注意：pos 不作为参数进行传递 。仅仅是为了标识链表的实际情况。
+
+如果链表中存在环 ，则返回 true 。 否则，返回 false 。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func hasCycle(head *ListNode) bool {
+    s, f := head, head
+
+    for f != nil {
+        if f.Next == nil {
+            return false
+        }
+        f = f.Next.Next
+        s = s.Next
+        
+        if s == f {
+            return true
+        }
+    }
+    return false
+}
+```
+
+### 142. 环形链表 II
+
+[142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+
+不允许修改 链表。
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func detectCycle(head *ListNode) *ListNode {
+    // 设链表共有a+b个节点
+    // fast = 2 * slow, fast = slow + nb = > slow = nb
+    // 到达环的时候走过的距离为 = a + nb, 所以就是求a，就是在当前s的位置再走a步
+
+    f, s := head, head
+
+    for f != nil {
+        if f.Next == nil {
+            return nil
+        }
+
+        f = f.Next.Next
+        s = s.Next
+
+        if f == s {
+            break
+        }
+    }
+    if f == nil {
+        return nil
+    }
+
+    // f走过的距离为2倍的s，并且相遇时f走过了s + nb的距离
+    // 让head，slow指针各走a步，去汇合
+    for head != nil {
+        if head == s {
+            return head
+        }
+
+        head = head.Next 
+        s = s.Next
+    }
+    return nil
+}
+```
+
+### 148. 排序链表
+
+[148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+```go
+func sortList(head *ListNode) *ListNode {
+    return sort(head, nil)
+}
+
+func sort(head *ListNode, tail *ListNode) *ListNode {
+    if head == nil {
+        return nil
+    }
+    if head.Next == tail {
+        head.Next = nil
+        return head
+    }
+
+    mid := findMid(head, tail)
+    return merge(sort(head, mid), sort(mid, tail))
+}
+
+// 将排好序的链表合并
+func merge(l1 *ListNode, l2 *ListNode) *ListNode {
+    dummy := &ListNode{}
+    curr := dummy
+
+    for l1 != nil || l2 != nil {
+        if l1 == nil {
+            curr.Next = l2
+            l2 = l2.Next
+        } else if l2 == nil {
+            curr.Next = l1
+            l1 = l1.Next
+        } else if l1.Val < l2.Val {
+            curr.Next = l1
+            l1 = l1.Next
+        } else {
+            curr.Next = l2
+            l2 = l2.Next
+        }
+        curr = curr.Next
+    }
+    return dummy.Next
+}
+
+// 找链表的中点
+func findMid(head *ListNode, tail *ListNode) *ListNode {
+    s, f := head, head
+    for f != tail && f.Next != tail {
+        f = f.Next.Next
+        s = s.Next
+    }
+
+    return s
+}
+```

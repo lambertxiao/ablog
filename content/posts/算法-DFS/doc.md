@@ -1,0 +1,179 @@
+---
+author: "Lambert Xiao"
+title: "算法-DFS"
+date: "2022-03-13"
+summary: ""
+tags: ["算法"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
+---
+
+### 39. 组合总和
+
+[39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+
+candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+
+对于给定的输入，保证和为 target 的不同组合数少于 150 个。
+
+```go
+func combinationSum(candidates []int, target int) [][]int {
+    res := [][]int{}
+
+    // idx是为了不添加重复的集合
+    var backtrace func (sum int, track []int, idx int)
+    backtrace = func (sum int, track []int, idx int) {
+        if target == sum {
+            res = append(res, append([]int{}, track...))
+            return
+        }
+
+        if sum > target {
+            return
+        }
+
+        for i := idx; i < len(candidates); i++ {
+            c := candidates[i]
+            backtrace(sum+c, append(track, c), i)
+        }
+    }
+
+    backtrace(0, []int{}, 0)
+    return res
+}
+```
+
+### 46. 全排列
+
+[46. 全排列](https://leetcode-cn.com/problems/permutations/)
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+```go
+func permute(nums []int) [][]int {
+    n := len(nums)
+    ans := [][]int{}
+    used := make([]bool, n)
+
+    var backtrace func(path []int)
+    backtrace = func(path []int) {
+        if len(path) == n {
+            ans = append(ans, append([]int{}, path...))
+            return
+        }
+
+        for idx, v := range nums {
+            if !used[idx] {
+                used[idx] = true
+                backtrace(append(path, v))
+                used[idx] = false
+            }
+        }
+    }
+    backtrace([]int{})
+    return ans
+}
+```
+
+### 78. 子集
+
+[78. 子集](https://leetcode-cn.com/problems/subsets/)
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+```go
+func subsets(nums []int) [][]int {
+    size := len(nums)
+    ans := [][]int{}
+
+    var backtrace func(startIdx int, path []int)
+    backtrace = func(startIdx int, path []int) {
+        ans = append(ans, append([]int{}, path...))
+        if startIdx >= size {
+            return
+        }
+        for i := startIdx; i < size; i++ {
+            backtrace(i+1, append(path, nums[i])) 
+        }
+    }
+
+    backtrace(0, []int{})
+    return ans
+}
+```
+
+### 79. 单词搜索
+
+[79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+```go
+func exist(board [][]byte, word string) bool {
+    workLength := len(word)
+    directions := [][]int{
+        {-1, 0}, // 往上
+        {1, 0}, // 往下
+        {0, -1}, // 往左
+        {0, 1}, // 往右
+    }
+    w := len(board)
+    h := len(board[0])
+
+    var check func(i, j, k int, visit [][]bool) bool
+    check = func(i, j, k int, visit [][]bool) bool {
+        if board[i][j] != word[k] {
+            return false
+        }
+
+        // word已经匹配到最后一位
+        if k == workLength - 1 {
+            return true
+        }
+
+        visit[i][j] = true
+        // 朝上下左右继续匹配k+1位
+        for _, d := range directions {
+            newI := i+d[0]
+            newJ := j+d[1]
+
+            if newI >= 0 && newJ >= 0 && newI < w && newJ < h{
+                if visit[newI][newJ] {
+                    continue
+                }
+
+                if check(newI, newJ, k+1, visit) {
+                    return true
+                }
+            }
+        }
+        visit[i][j] = false
+        return false
+    }
+
+
+    for i, row := range board {
+        for j := range row {
+            visit := geneVisit(w, h)
+            if check(i, j, 0, visit) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+func geneVisit(w, h int) [][]bool {
+    visit := make([][]bool, w)
+    for i := 0; i < w; i++ {
+        visit[i] = make([]bool, h)
+    }
+
+    return visit
+}
+```

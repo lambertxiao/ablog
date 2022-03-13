@@ -16,7 +16,9 @@ cover:
 
 做二分查找牢记循环不变量
 
-### [704. 二分查找](https://leetcode-cn.com/problems/binary-search/)
+### 704. 二分查找
+
+[704. 二分查找](https://leetcode-cn.com/problems/binary-search/)
 
 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
 
@@ -38,7 +40,9 @@ func search(nums []int, target int) int {
 }
 ```
 
-### [33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+### 33. 搜索旋转排序数组
+
+[33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
 整数数组 nums 按升序排列，数组中的值 互不相同 。
 
@@ -75,7 +79,9 @@ func search(nums []int, target int) int {
 }
 ```
 
-### [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+### 34. 在排序数组中查找元素的第一个和最后一个位置
+
+[34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
 如果数组中不存在目标值 target，返回 [-1, -1]。
@@ -131,7 +137,9 @@ func rightBound(nums []int, target int) int {
 }
 ```
 
-### [287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+### 287. 寻找重复数
+
+[287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
 给定一个包含 n + 1 个整数的数组 nums ，其数字都在 [1, n] 范围内（包括 1 和 n），可知至少存在一个重复的整数。
 假设 nums 只有 一个重复的整数 ，返回 这个重复的数 。
@@ -165,7 +173,9 @@ func findDuplicate(nums []int) int {
 ```
 
 
-### [153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+### 153. 寻找旋转排序数组中的最小值
+
+[153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 
 
 已知一个长度为 n 的数组，预先按照升序排列，经由 1 到 n 次 旋转 后，得到输入数组。例如，原数组 nums = [0,1,2,4,5,6,7] 在变化后可能得到：
@@ -193,7 +203,9 @@ func findMin(nums []int) int {
 }
 ```
 
-### [154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+### 154. 寻找旋转排序数组中的最小值 II
+
+[154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 
 已知一个长度为 n 的数组，预先按照升序排列，经由 1 到 n 次 旋转 后，得到输入数组。例如，原数组 nums = [0,1,4,4,5,6,7] 在变化后可能得到：
 若旋转 4 次，则可以得到 [4,5,6,7,0,1,4]
@@ -253,7 +265,9 @@ func mySqrt(x int) int {
 }
 ```
 
-### [162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+### 162. 寻找峰值
+
+[162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 
 峰值元素是指其值严格大于左右相邻值的元素。
 给你一个整数数组 nums，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 任何一个峰值 所在位置即可。
