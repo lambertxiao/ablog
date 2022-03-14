@@ -39,3 +39,54 @@ function dailyTemperatures(temperatures: number[]): number[] {
 }
 ```
 
+### 1438. 绝对差不超过限制的最长连续子数组
+
+[1438. 绝对差不超过限制的最长连续子数组](https://leetcode-cn.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/)
+给你一个整数数组 nums ，和一个表示限制的整数 limit，请你返回最长连续子数组的长度，该子数组中的任意两个元素之间的绝对差必须小于或者等于 limit 。
+
+如果不存在满足条件的子数组，则返回 0 。
+
+滑动窗口 + 单调递减栈 + 单调递增栈
+
+```go
+func longestSubarray(nums []int, limit int) int {
+    // 单调递减栈和单调递增栈
+    minq, maxq := []int{}, []int{}
+    l, r, ans := 0, 0, 0
+
+    for r < len(nums) {
+        num := nums[r]
+        for len(minq) != 0 && minq[len(minq)-1] < num {
+            minq = minq[:len(minq)-1]
+        }
+        minq = append(minq, num)
+
+        for len(maxq) != 0 && maxq[len(maxq)-1] > num {
+            maxq = maxq[:len(maxq)-1]
+        }
+        maxq = append(maxq, num)
+
+        //  此时maxq里可以拿到最小值，minq里可以拿到最大值
+        for len(maxq) > 0 && len(minq) > 0 && minq[0] - maxq[0] > limit {
+            if nums[l] == maxq[0] {
+                maxq = maxq[1:]
+            }
+            if nums[l] == minq[0] {
+                minq = minq[1:]
+            }
+            // 在不满足绝对差小于limit的情况下，需要移动窗口左边界
+            l++
+        }
+        ans = max(ans, r - l + 1)
+        r++
+    }
+
+    return ans
+}
+
+func max(x, y int) int {
+    if x > y { return x }
+    return y
+}
+
+```
