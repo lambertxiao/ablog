@@ -8,6 +8,8 @@ categories: ["epoll"]
 series: ["Themes Guide"]
 ShowToc: true
 TocOpen: true
+cover: 
+  image: "/cover/epoll示意图.png"
 ---
 
 https://zhuanlan.zhihu.com/p/353692786?utm_medium=social&utm_oi=947783647009439744
