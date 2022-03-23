@@ -636,3 +636,55 @@ func sumNumbers(root *TreeNode) int {
     return dfs(root, 0)
 }
 ```
+
+### 109. 有序链表转换二叉搜索树
+
+[109. 有序链表转换二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/)
+
+思路：
+
+1. 找到链表的中点，一分为二
+2. 中点为head，并且递归生成左右子树
+3. 当 `left == right` 时，证明已经构建完成（可以这么理解，left和right是左闭右开，当left==right时，证明left已经超过边界了）
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func sortedListToBST(head *ListNode) *TreeNode {
+    return build(head, nil)
+}
+
+func build(left *ListNode, right *ListNode) *TreeNode {
+    if left == right {
+        return nil
+    }
+    
+    mid := findMid(left, right)
+    head := &TreeNode{Val: mid.Val}
+    head.Left = build(left, mid)
+    head.Right = build(mid.Next, right)
+    return head
+}
+
+func findMid(left, right *ListNode) *ListNode {
+    s, f := left, left
+    for f != right && f.Next != right {
+        s = s.Next
+        f = f.Next.Next
+    }
+    return s
+}
+```
