@@ -221,3 +221,58 @@ func maxAreaOfIsland(grid [][]int) int {
     return ans
 }
 ```
+
+### 130. 被围绕的区域
+
+[130. 被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+给你一个 m x n 的矩阵 board ，由若干字符 'X' 和 'O' ，找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+
+思路：
+
+1. 需要从上下左右边界开始找（因为从中间找的话可能找到的O其实是跟边界相连着的，此时这个O是不能替换成X的）
+2. 替换与边界相连的O为任意字符#
+3. 最后遍历整个board，修正整个board
+
+```go
+func solve(board [][]byte)  {
+    m, n := len(board), len(board[0])
+
+    var dfs func(i, j int)
+    dfs = func(i, j int) {
+        // 判断i，j是否位于边界
+        if i < 0 || i > m - 1 || j < 0 || j > n - 1 || board[i][j] != 'O' {
+            return
+        }
+
+        // 置为任意字符
+        board[i][j] = '#'
+        dfs(i+1, j)
+        dfs(i-1, j)
+        dfs(i, j+1)
+        dfs(i, j-1)
+    }
+
+    // 从左右两边出发，将与边界上的O字符置为#字符
+    for i := 0; i < m; i++ {
+        dfs(i, 0)
+        dfs(i, n-1)
+    }
+    // 从上下两边出发，将与边界上的O字符置为#字符
+    for j := 0; j < n; j++ {
+        dfs(0, j)
+        dfs(m-1, j)
+    }
+
+    for i := 0; i < m; i++ {
+        for j := 0; j < n; j++ {
+            // 没有被置为#的O字符，证明没有同边界相连，可以替换
+            if board[i][j] == 'O' {
+                board[i][j] = 'X'
+            } else if board[i][j] == '#' {
+                // 对于#，实际上是同边界相连的O，所以需要还原
+                board[i][j] = 'O'
+            }
+        }
+    }
+}
+```

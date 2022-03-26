@@ -541,6 +541,73 @@ func majorityElement(nums []int) int {
 }
 ```
 
+### 229. 求众数 II
+
+[229. 求众数 II](https://leetcode-cn.com/problems/majority-element-ii/)
+给定一个大小为 n 的整数数组，找出其中所有出现超过 ⌊ n/3 ⌋ 次的元素。
+
+
+```go
+func majorityElement(nums []int) []int {
+    if len(nums) < 2 {
+        return nums
+    }
+
+    candidate1, candidate2 := nums[0], nums[1]
+    cnt1, cnt2 := 0, 0
+
+    for _, num := range nums {
+        if num == candidate1 {
+            cnt1++
+            continue
+        }
+        if num == candidate2 {
+            cnt2++
+            continue
+        }
+
+        // 一号候选人没有票，则当前num成为候选人
+        if cnt1 == 0 {
+            candidate1 = num
+            cnt1 = 1
+            continue
+        }
+
+        // 二号候选人没有票，则当前num成为候选人
+        if cnt2 == 0 {
+            candidate2 = num
+            cnt2 = 1
+            continue
+        }
+
+        // 两人都有票，和当前num相互抵消
+        cnt1--
+        cnt2--
+    }
+
+    // 计算两个候选人的个数
+    cnt1, cnt2 = 0, 0
+    for _, num := range nums {
+        if num == candidate1 {
+            cnt1++
+        }
+        if num == candidate2 {
+            cnt2++
+        }
+    }
+
+    ans := []int{}
+    if cnt1 > len(nums) / 3 {
+        ans = append(ans, candidate1)
+    }
+    if candidate2 != candidate1 && cnt2 > len(nums) / 3 {
+        ans = append(ans, candidate2)
+    }
+
+    return ans
+}
+```
+
 ### 152. 乘积最大子数组
 
 [152. 乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
@@ -599,5 +666,140 @@ func wordBreak(s string, wordDict []string) bool {
     }
 
     return dp[size]
+}
+```
+
+### 164. 最大间距
+
+[164. 最大间距](https://leetcode-cn.com/problems/maximum-gap/)
+
+给定一个无序的数组 nums，返回 数组在排序之后，相邻元素之间最大的差值 。如果数组元素个数小于 2，则返回 0 。
+
+您必须编写一个在「线性时间」内运行并使用「线性额外空间」的算法。
+
+思路：
+
+1. 基数排序
+2. 假设有数组[3,6,9,1,11,23,4,52,33]
+3. 先找到最大值52, 52是个两位数，因此只要进行两轮排序
+4. 第一轮，对于个位上的数排序
+
+    ```
+    | 个位上的数 | 元素集合 |
+    | 0 | 
+    | 1 | 1, 11 
+    | 2 | 52 
+    | 3 | 3, 23, 33 
+    | 4 | 4 
+    | 5 | 
+    | 6 | 6 
+    | 7 | 
+    | 8 | 
+    | 9 | 9 
+    ```
+    因此，第一轮之后元素的顺序为：[1, 11, 52, 3, 23, 33, 4, 6, 9]
+
+5. 第二轮，对于十位上的数排序
+
+    ```
+    | 十位上的数 | 元素集合 |
+    | 0 | 1, 3, 4, 6, 9 
+    | 1 | 11 
+    | 2 | 23 
+    | 3 | 33 
+    | 4 | 
+    | 5 | 52 
+    | 6 | 
+    | 7 | 
+    | 8 | 
+    | 9 | 
+
+    因此，第二轮之后元素的顺序为：[1, 3, 4, 6, 9, 11, 23, 33, 52]
+    ```
+
+最终代码：
+
+```go
+func bsort(nums []int) {
+    n := len(nums)
+    tmp := make([]int, n)
+    maxVal := max(nums...)
+    for round := 1; round <= maxVal; round *= 10 {
+        cnt := [10]int{} // 
+        for _, num := range nums {
+            digit := num / round % 10
+            cnt[digit]++
+        }
+
+        for i := 1; i < 10; i++ {
+            cnt[i] += cnt[i-1]
+        }
+
+        // 从后往前放置所有的数，（从后往前是因为同一个位上可能有多个数）
+        for i := n - 1; i >= 0; i-- {
+            digit := nums[i] / round % 10
+            tmp[cnt[digit]-1] = nums[i]
+            cnt[digit]--
+        }
+        copy(nums, tmp)
+    }
+} 
+
+func maximumGap(nums []int) (ans int) {
+    n := len(nums)
+    if n < 2 {
+        return
+    }
+
+    bsort(nums)
+
+    for i := 1; i < n; i++ {
+        ans = max(ans, nums[i]-nums[i-1])
+    }
+    return
+}
+
+func max(a ...int) int {
+    res := a[0]
+    for _, v := range a[1:] {
+        if v > res {
+            res = v
+        }
+    }
+    return res
+}
+```
+
+### 907. 子数组的最小值之和
+
+[907. 子数组的最小值之和](https://leetcode-cn.com/problems/sum-of-subarray-minimums/)
+给定一个整数数组 arr，找到 min(b) 的总和，其中 b 的范围为 arr 的每个（连续）子数组。
+
+由于答案可能很大，因此 返回答案模 10^9 + 7 。
+
+思路：对于每一个nums[i], 分别向左右找到它的影响范围
+
+```go
+func sumSubarrayMins(arr []int) int {
+    n := len(arr)
+    mod := 1000000007
+    ans := 0
+    for i := 0; i < n; i++ {
+        l := i - 1
+        // 找到以arr[i]最为最小值的左边界
+        for l >= 0 && arr[i] < arr[l] {
+            l-- 
+        }
+        
+        r := i + 1
+        for r < n && arr[i] <= arr[r] {
+            r++
+        }
+
+        // 左边的个数*右边的个数能得到子数组的数量，*a[i]表示加上多少个a[i]
+        ans += (i - l) * (r - i) * arr[i]
+    }
+
+    return ans % mod
 }
 ```
