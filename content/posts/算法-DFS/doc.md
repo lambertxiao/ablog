@@ -45,6 +45,44 @@ func combinationSum(candidates []int, target int) [][]int {
     return res
 }
 ```
+### 40. 组合总和 II
+
+[40. 组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/)
+给定一个候选人编号的集合 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用 一次 。
+
+注意：解集不能包含重复的组合。 
+
+```go
+func combinationSum2(candidates []int, target int) [][]int {
+    sort.Ints(candidates)
+    ans := [][]int{}
+    
+    var backtrace func (sum int, set []int, idx int)
+    backtrace = func (sum int, set []int, idx int) {
+        if sum == target {
+            ans = append(ans, append([]int{}, set...))
+            return
+        }
+
+        if sum > target {
+            return
+        }
+
+        for i := idx; i < len(candidates); i++ {
+            if i > idx && candidates[i] == candidates[i-1] {
+                continue
+            }
+            val := candidates[i]
+            backtrace(sum + val, append(set, val), i+1)
+        }
+    }
+
+    backtrace(0, []int{}, 0)
+    return ans
+}
+```
 
 ### 46. 全排列
 
