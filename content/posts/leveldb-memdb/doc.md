@@ -3,16 +3,18 @@ author: "Lambert Xiao"
 title: "leveldb内部实现之memdb"
 date: "2022-03-30"
 summary: "长成这样，真是看不出这是个跳表"
-tags: ["kv存储"]
+tags: ["leveldb"]
 categories: [""]
 series: ["Themes Guide"]
 ShowToc: true
 TocOpen: true
 cover: 
-  image: "/cover/leveldb内部实现之memdb.png"
+  image: "/cover/leveldb-memdb.png"
 ---
 
 leveldb里的memdb使用跳表来实现的，不同于常见的使用链表来实现的跳表，memdb是使用数组来模拟的
+
+> 以下代码分析基于go版本的leveldb `https://github.com/syndtr/goleveldb`
 
 ## MemDB的结构
 
