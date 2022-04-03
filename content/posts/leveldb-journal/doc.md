@@ -19,6 +19,9 @@ journal是levedb中的WAL的实现，由于leveldb是将数据先写入内存中
 
 > 以下代码分析基于go版本的leveldb `https://github.com/syndtr/goleveldb`
 
+![](../1.png)
+![](../2.png)
+
 ## journal的写入时机
 
 Put写入数据时，最终会走到的writeLocked方法里的以下代码块
