@@ -3,7 +3,7 @@ author: "Lambert Xiao"
 title: "算法-数组"
 date: "2022-03-13"
 summary: "与数组相关的算法题可以又各种骚操作"
-tags: ["算法", "动态规划"]
+tags: ["算法", "动态规划", "数组"]
 categories: [""]
 series: ["Themes Guide"]
 ShowToc: true
@@ -850,5 +850,68 @@ func sumSubarrayMins(arr []int) int {
     }
 
     return ans % mod
+}
+```
+
+### 26. 删除有序数组中的重复项
+
+[26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
+
+给你一个 升序排列 的数组 nums ，请你 原地 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。元素的 相对顺序 应该保持 一致 。
+
+由于在某些语言中不能改变数组的长度，所以必须将结果放在数组nums的第一部分。更规范地说，如果在删除重复项之后有 k 个元素，那么 nums 的前 k 个元素应该保存最终结果。
+
+将最终结果插入 nums 的前 k 个位置后返回 k 。
+不要使用额外的空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+通用解法：
+
+```go
+func removeDuplicates(nums []int) int {
+    // 移除重复项的通用函数
+    replace := func(k int) int {
+        // 下一个要被覆盖的位置
+        replaceIdx := 0
+        for _, num := range nums {
+            // replaceIdx < k 意味着直接跳过前k个
+            if replaceIdx < k || num != nums[replaceIdx-k] {
+                nums[replaceIdx] = num
+                replaceIdx++
+            }
+        }
+        return replaceIdx
+    }
+
+    return replace(1)
+}
+```
+
+### 80. 删除有序数组中的重复项 II
+
+[80. 删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
+
+给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 最多出现两次 ，返回删除后数组的新长度。
+
+不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+通用解法：
+
+```go
+func removeDuplicates(nums []int) int {
+    // 移除重复项的通用函数
+    replace := func(k int) int {
+        // 下一个要被覆盖的位置
+        replaceIdx := 0
+        for _, num := range nums {
+            // replaceIdx < k 意味着直接跳过前k个
+            if replaceIdx < k || num != nums[replaceIdx-k] {
+                nums[replaceIdx] = num
+                replaceIdx++
+            }
+        }
+        return replaceIdx
+    }
+
+    return replace(2)
 }
 ```
