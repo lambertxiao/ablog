@@ -61,6 +61,33 @@ func longestPalindrome(s string) string {
 
 3. 每计算出一个回文子串，更新begin和length的值
 
+### 53. 最大子数组和
+
+[53. 最大子数组和](https://leetcode-cn.com/problems/maximum-subarray/)
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+子数组 是数组中的一个连续部分。
+
+```go
+func maxSubArray(nums []int) int {
+    l := len(nums)
+    max := nums[0]
+
+    for i := 1; i < l; i++ {
+        if nums[i] + nums[i-1] > nums[i] {
+            // 这里利用nums[i]直接记录每次的累加和
+            nums[i] = nums[i] + nums[i-1]
+        }
+
+        if nums[i] > max {
+            max = nums[i]
+        } 
+    }
+
+    return max
+}
+```
+
 ### 300. 最长递增子序列
 
 [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)

@@ -12,6 +12,8 @@ cover:
 #   image: "/cover/golang-内存管理.png"
 ---
 
+### 4. 寻找两个正序数组的中位数
+
 [4. 寻找两个正序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)
 
 给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
@@ -123,6 +125,40 @@ func topKFrequent(nums []int, k int) []int {
 ### 215. 数组中的第K个最大元素
 
 [215. 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+```go
+func findKthLargest(nums []int, k int) int {
+    h := hp{}
+    for _, num := range nums {
+        heap.Push(&h, num)
+        if len(h) > k {
+            heap.Pop(&h)
+        }
+    }
+    return h[0]
+}
+
+type hp []int
+func (h hp) Len() int { return len(h) }
+func (h hp) Less(i, j int) bool { return h[i] < h[j] }
+func (h hp) Swap(i, j int) { h[i], h[j] = h[j], h[i]} 
+func (h *hp) Push(x interface{}) { *h = append(*h, x.(int)) }
+func (h *hp) Pop() interface{} {
+    old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0:n-1]
+	return x
+}
+```
+
+### 215. 数组中的第K个最大元素
+
+[215. 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+
 给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
 
 请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。

@@ -10,6 +10,57 @@ ShowToc: true
 TocOpen: true
 ---
 
+### 22. 括号生成
+
+[22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+```go
+func generateParenthesis(n int) []string {
+    ans := []string{}
+    var dfs func(lb, rb int, s string)
+    dfs = func(lb, rb int, s string) {
+        if lb > rb {
+            return
+        }
+        
+        if lb == 0 && rb == 0 {
+            // 括号用完了，并且是合法的
+            if isValid(s) {
+                ans = append(ans, s)
+            }
+            return
+        }
+
+        if lb != 0 {
+            dfs(lb - 1, rb, s + "(")
+        }
+
+        if rb != 0 {
+            dfs(lb, rb - 1, s + ")")
+        }
+    }
+    dfs(n, n, "")
+    return ans
+}
+
+func isValid(s string) bool {
+    left := 0
+    for _, c := range s {
+        if c == '(' {
+            left++
+        } else {
+            if left == 0 {
+                return false
+            }
+            left--
+        }
+    }
+    
+    return left == 0
+}
+```
+
 ### 39. 组合总和
 
 [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
