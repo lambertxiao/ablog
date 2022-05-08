@@ -134,6 +134,48 @@ func pathSum(root *TreeNode, targetSum int) int {
 }
 ```
 
+### 235. 二叉搜索树的最近公共祖先
+
+[235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val   int
+ *     Left  *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+        return nil
+    }
+
+    if root == p || root == q {
+        return root
+    }
+
+    // 在左边找
+    if p.Val < root.Val && q.Val < root.Val {
+        return lowestCommonAncestor(root.Left, p, q)
+    }
+    // 在右边找
+    if p.Val > root.Val && q.Val > root.Val {
+        return lowestCommonAncestor(root.Right, p, q)
+    }
+
+    // 一大一小的公共祖先一定是root
+    return root
+}
+```
+
 ### 236. 二叉树的最近公共祖先
 
 [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)

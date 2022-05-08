@@ -213,8 +213,9 @@ func exist(board [][]byte, word string) bool {
     w := len(board)
     h := len(board[0])
 
-    var check func(i, j, k int, visit [][]bool) bool
-    check = func(i, j, k int, visit [][]bool) bool {
+    visit := geneVisit(w, h)
+    var check func(i, j, k int) bool
+    check = func(i, j, k int) bool {
         if board[i][j] != word[k] {
             return false
         }
@@ -225,6 +226,9 @@ func exist(board [][]byte, word string) bool {
         }
 
         visit[i][j] = true
+        defer func() {
+            visit[i][j] = false
+        }() 
         // 朝上下左右继续匹配k+1位
         for _, d := range directions {
             newI := i+d[0]
@@ -235,20 +239,18 @@ func exist(board [][]byte, word string) bool {
                     continue
                 }
 
-                if check(newI, newJ, k+1, visit) {
+                if check(newI, newJ, k+1) {
                     return true
                 }
             }
         }
-        visit[i][j] = false
         return false
     }
 
 
     for i, row := range board {
         for j := range row {
-            visit := geneVisit(w, h)
-            if check(i, j, 0, visit) {
+            if check(i, j, 0) {
                 return true
             }
         }

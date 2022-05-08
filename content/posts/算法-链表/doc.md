@@ -620,59 +620,30 @@ func copyRandomList(head *Node) *Node {
 
 你必须在 O(1) 的额外空间复杂度和 O(n) 的时间复杂度下解决这个问题。
 
-```java
+```go
 /**
  * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
  * }
  */
-class Solution {
-    public ListNode oddEvenList(ListNode head) {
-        if (head == null || head.next == null || head.next.next == null) {
-            return head;
-        }
-        
-        ListNode temp, tempNode = null;
-        ListNode newHead = head;
-        // 奇数位指针和偶数位指针
-        ListNode odd = newHead, even = newHead.next;
-        // 一开始是奇数
-        boolean isOdd = true;
-        head = even.next;
-        
-        if (head.next == null) {
-            temp = odd.next;
-            odd.next = head;
-            temp.next = head.next;
-            head.next = temp;
-            
-            return odd;
-        }
-           
-        while (head != null) {
-            temp = head.next;
-            head.next = null;
-            
-            // 如果是奇数
-            if (isOdd) {
-                tempNode = odd.next;
-                odd.next = head;
-                odd = odd.next;
-                odd.next = tempNode;
-            } else {
-                even.next = head;
-                even = even.next;
-            }
-            
-            isOdd = !isOdd;
-            head = temp;
-        }
-        
-        return newHead;
+func oddEvenList(head *ListNode) *ListNode {
+    if head == nil {
+        return nil
     }
+    odd, even := head, head.Next
+    eventHead := even
+
+    for even != nil && even.Next != nil {
+        odd.Next = even.Next
+        odd = odd.Next
+        even.Next = odd.Next
+        even = even.Next
+    }
+
+    odd.Next = eventHead
+    return head
 }
 ```
 
@@ -681,41 +652,27 @@ class Solution {
 [83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
 给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
 
-```java
+```go
 /**
  * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
  * }
  */
-class Solution {
-    public ListNode deleteDuplicates(ListNode head) {
-        if (head == null || head.next == null) {
-            return head;
-        }
-        
-        ListNode p = head, q = head.next;
-        
-        while (q != null) {
-            if (q.val == p.val) {
-                q = q.next;
-                
-                if (q == null) {
-                    p.next = null;
-                }
-                
-                continue;
-            }
-            
-            p.next = q;
-            p = q;
-            q = q.next;
-        }
-        
-        return head;
+func deleteDuplicates(head *ListNode) *ListNode {
+    if head == nil {
+        return nil
     }
+    curr := head
+    for curr.Next != nil {
+        if curr.Val == curr.Next.Val {
+            curr.Next = curr.Next.Next
+        } else {
+            curr = curr.Next
+        }
+    }
+    return head
 }
 ```
 

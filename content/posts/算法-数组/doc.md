@@ -940,3 +940,57 @@ func rotate(matrix [][]int)  {
     }
 }
 ```
+
+### 561. 数组拆分
+
+[561. 数组拆分 I](https://leetcode-cn.com/problems/array-partition-i/)
+
+给定长度为 2n 的整数数组 nums ，你的任务是将这些数分成 n 对, 例如 (a1, b1), (a2, b2), ..., (an, bn) ，使得从 1 到 n 的 min(ai, bi) 总和最大。
+
+返回该 最大总和 。
+
+```go
+func arrayPairSum(nums []int) int {
+    sort.Ints(nums)
+    ans := 0
+    for i := 0; i < len(nums); i += 2 {
+        ans += nums[i]
+    }
+    return ans
+}
+```
+
+
+
+### 剑指 Offer 03. 数组中重复的数字
+
+[剑指 Offer 03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
+
+找出数组中重复的数字。
+
+在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+
+思路:
+
+值和下标相关联，将nums[i]和nums[nums[i]]交换，即让值和索引相同
+
+
+```go
+func findRepeatNumber(nums []int) int {
+    i := 0
+    for i < len(nums) {
+        if nums[i] == i {
+            i++
+            continue
+        }
+
+        if nums[i] == nums[nums[i]] {
+            return nums[i]
+        }
+
+        nums[i], nums[nums[i]] = nums[nums[i]], nums[i]
+    }
+
+    return 0
+}
+```
