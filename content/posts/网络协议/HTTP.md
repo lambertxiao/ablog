@@ -8,6 +8,7 @@ categories: [""]
 series: ["Themes Guide"]
 ShowToc: true
 TocOpen: true
+mermaid: true
 ---
 
 # Https协议
@@ -17,7 +18,7 @@ https本质上是在http的基础上加上来安全传输层（ssl或tls），�
 
 ## https交互流程图
 
-```mermaid
+{{<mermaid>}}
 sequenceDiagram
     participant 客户端
     participant 服务端
@@ -30,14 +31,15 @@ sequenceDiagram
     服务端 ->> 服务端: 使用私钥b解密encrypt-key，获得ramdom-key
     服务端 ->> 客户端: 使用ramdom-key对数据进行对称加密并传输给客户端
     客户端 -> 服务端: 使用对称加密传递加密后的数据
-```
+{{</mermaid>}}
+
 
 上图中，涉及对称加密和非对称加密，可以看出https传输主要分成两部分，一是证书的验证，二是加密数据的传输
 
 
 ## 安全传输层的交互流程
 
-```mermaid
+{{<mermaid>}}
 sequenceDiagram
     participant 客户端
     participant 服务端
@@ -50,6 +52,4 @@ sequenceDiagram
     客户端 ->> 服务端: 客户端发送finished消息
     服务端 ->> 客户端: 服务端发送finished消息
     客户端 --> 服务端: 成功建立安全链接，可进行加密通信
-```
-
-
+{{</mermaid>}}
