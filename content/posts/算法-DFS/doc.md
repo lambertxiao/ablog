@@ -10,6 +10,57 @@ ShowToc: true
 TocOpen: true
 ---
 
+### 22. 括号生成
+
+[22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+```go
+func generateParenthesis(n int) []string {
+    ans := []string{}
+    var dfs func(lb, rb int, s string)
+    dfs = func(lb, rb int, s string) {
+        if lb > rb {
+            return
+        }
+        
+        if lb == 0 && rb == 0 {
+            // 括号用完了，并且是合法的
+            if isValid(s) {
+                ans = append(ans, s)
+            }
+            return
+        }
+
+        if lb != 0 {
+            dfs(lb - 1, rb, s + "(")
+        }
+
+        if rb != 0 {
+            dfs(lb, rb - 1, s + ")")
+        }
+    }
+    dfs(n, n, "")
+    return ans
+}
+
+func isValid(s string) bool {
+    left := 0
+    for _, c := range s {
+        if c == '(' {
+            left++
+        } else {
+            if left == 0 {
+                return false
+            }
+            left--
+        }
+    }
+    
+    return left == 0
+}
+```
+
 ### 39. 组合总和
 
 [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
@@ -43,6 +94,44 @@ func combinationSum(candidates []int, target int) [][]int {
 
     backtrace(0, []int{}, 0)
     return res
+}
+```
+### 40. 组合总和 II
+
+[40. 组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/)
+给定一个候选人编号的集合 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用 一次 。
+
+注意：解集不能包含重复的组合。 
+
+```go
+func combinationSum2(candidates []int, target int) [][]int {
+    sort.Ints(candidates)
+    ans := [][]int{}
+    
+    var backtrace func (sum int, set []int, idx int)
+    backtrace = func (sum int, set []int, idx int) {
+        if sum == target {
+            ans = append(ans, append([]int{}, set...))
+            return
+        }
+
+        if sum > target {
+            return
+        }
+
+        for i := idx; i < len(candidates); i++ {
+            if i > idx && candidates[i] == candidates[i-1] {
+                continue
+            }
+            val := candidates[i]
+            backtrace(sum + val, append(set, val), i+1)
+        }
+    }
+
+    backtrace(0, []int{}, 0)
+    return ans
 }
 ```
 
@@ -124,8 +213,9 @@ func exist(board [][]byte, word string) bool {
     w := len(board)
     h := len(board[0])
 
-    var check func(i, j, k int, visit [][]bool) bool
-    check = func(i, j, k int, visit [][]bool) bool {
+    visit := geneVisit(w, h)
+    var check func(i, j, k int) bool
+    check = func(i, j, k int) bool {
         if board[i][j] != word[k] {
             return false
         }
@@ -136,6 +226,9 @@ func exist(board [][]byte, word string) bool {
         }
 
         visit[i][j] = true
+        defer func() {
+            visit[i][j] = false
+        }() 
         // 朝上下左右继续匹配k+1位
         for _, d := range directions {
             newI := i+d[0]
@@ -146,20 +239,18 @@ func exist(board [][]byte, word string) bool {
                     continue
                 }
 
-                if check(newI, newJ, k+1, visit) {
+                if check(newI, newJ, k+1) {
                     return true
                 }
             }
         }
-        visit[i][j] = false
         return false
     }
 
 
     for i, row := range board {
         for j := range row {
-            visit := geneVisit(w, h)
-            if check(i, j, 0, visit) {
+            if check(i, j, 0) {
                 return true
             }
         }
@@ -219,5 +310,60 @@ func maxAreaOfIsland(grid [][]int) int {
         }
     }
     return ans
+}
+```
+
+### 130. 被围绕的区域
+
+[130. 被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+给你一个 m x n 的矩阵 board ，由若干字符 'X' 和 'O' ，找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+
+思路：
+
+1. 需要从上下左右边界开始找（因为从中间找的话可能找到的O其实是跟边界相连着的，此时这个O是不能替换成X的）
+2. 替换与边界相连的O为任意字符#
+3. 最后遍历整个board，修正整个board
+
+```go
+func solve(board [][]byte)  {
+    m, n := len(board), len(board[0])
+
+    var dfs func(i, j int)
+    dfs = func(i, j int) {
+        // 判断i，j是否位于边界
+        if i < 0 || i > m - 1 || j < 0 || j > n - 1 || board[i][j] != 'O' {
+            return
+        }
+
+        // 置为任意字符
+        board[i][j] = '#'
+        dfs(i+1, j)
+        dfs(i-1, j)
+        dfs(i, j+1)
+        dfs(i, j-1)
+    }
+
+    // 从左右两边出发，将与边界上的O字符置为#字符
+    for i := 0; i < m; i++ {
+        dfs(i, 0)
+        dfs(i, n-1)
+    }
+    // 从上下两边出发，将与边界上的O字符置为#字符
+    for j := 0; j < n; j++ {
+        dfs(0, j)
+        dfs(m-1, j)
+    }
+
+    for i := 0; i < m; i++ {
+        for j := 0; j < n; j++ {
+            // 没有被置为#的O字符，证明没有同边界相连，可以替换
+            if board[i][j] == 'O' {
+                board[i][j] = 'X'
+            } else if board[i][j] == '#' {
+                // 对于#，实际上是同边界相连的O，所以需要还原
+                board[i][j] = 'O'
+            }
+        }
+    }
 }
 ```

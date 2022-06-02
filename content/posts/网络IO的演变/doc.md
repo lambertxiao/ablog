@@ -1,16 +1,105 @@
 ---
 author: "Lambert Xiao"
-title: "Epoll思维导图"
-date: "2022-03-06"
+title: "网络IO的演变"
+date: "2022-03-15"
 summary: "一颗红黑树，一个就绪句柄链表，一个进程等待队列，少量的内核cache"
 tags: ["epoll"]
 categories: ["epoll"]
 series: ["Themes Guide"]
 ShowToc: true
 TocOpen: true
+cover: 
+  image: "/cover/epoll示意图.png"
 ---
 
 https://zhuanlan.zhihu.com/p/353692786?utm_medium=social&utm_oi=947783647009439744
+
+## 网络IO的变化
+
+### BIO
+
+```go
+ss := new(socket)
+bind(ss, port)
+listen(ss)
+
+for {
+    s := accept(ss) // 会阻塞住
+}
+```
+
+优点：
+
+1. 每个连接一个线程去处理，可以同时接收很多连接
+
+缺点：
+
+1. BIO中有两处阻塞，第一个是accept等待客户端连接阻塞，第二个是客户端连接后读取客户端数据recv函数阻塞，因此需要在建立连接后开启一个新线程处理
+2. 由于每个连接需要一个线程处理，当连接过多时，线程的内存开销比较大，同时CPU的调度消耗也比较大
+
+### NIO
+
+```go
+ss := new(socket)
+bind(ss, port)
+listen(ss)
+
+for {
+    fd := accept(ss) // 该行不会阻塞住，如果fd不为-1，则表示有新的连接
+    fd.nonblocking()
+    
+    for {
+        recv(fd) // 此行也不会阻塞，没有数据可读时，会立即返回
+    }
+}
+```
+
+优点：
+
+1. server端accpet客户端连接和读取客户端数据不阻塞，解决了阻塞问题，避免多线程处理多连接的问题
+
+缺点：
+
+1. 假设现在连接的客户端有10w个，此时可能有请求数据的就占极小部分，但这10w个连接每次都需要发起recv请求(一次系统调用)区检查是否有数据到来，这大量浪费了时间和资源
+
+### 第一版IO多路复用(select/poll)
+
+```go
+ss := new(socket)
+bind(ss, port)
+listen(ss)
+
+ss.nonblocking()
+
+for {
+    // 内存中记录全部的fd
+
+    select(fds) // poll(fds) 
+}
+```
+
+优点：
+
+1. 解决了用户需要频繁进行recv系统调用的问题，用户态1次系统调用，交由内核遍历
+
+缺点：
+
+1. 每次需要将所有的fds集合传递给内核，由内核遍历，然后将就绪的readyFds返回，内核态无存储能力
+2. 内核实际上也仍需要每次遍历全量的fd
+
+### 第二版IO多路复用(epoll)
+
+```
+epoll_create()
+epoll_ctl()
+epoll_wait()
+```
+
+优点：
+
+1. 调用epoll_create时在内核中开辟了一段空间，分别是存放fd的红黑树，就绪列表，等待列表
+2. epoll_ctl用来增删改红黑树中的fd
+3. epoll_wait阻塞在内核态，就绪队列不为空时，返回用户态
 
 ## 为啥需要Epoll
 

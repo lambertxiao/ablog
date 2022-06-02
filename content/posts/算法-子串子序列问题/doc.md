@@ -61,6 +61,33 @@ func longestPalindrome(s string) string {
 
 3. 每计算出一个回文子串，更新begin和length的值
 
+### 53. 最大子数组和
+
+[53. 最大子数组和](https://leetcode-cn.com/problems/maximum-subarray/)
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+子数组 是数组中的一个连续部分。
+
+```go
+func maxSubArray(nums []int) int {
+    l := len(nums)
+    max := nums[0]
+
+    for i := 1; i < l; i++ {
+        if nums[i] + nums[i-1] > nums[i] {
+            // 这里利用nums[i]直接记录每次的累加和
+            nums[i] = nums[i] + nums[i-1]
+        }
+
+        if nums[i] > max {
+            max = nums[i]
+        } 
+    }
+
+    return max
+}
+```
+
 ### 300. 最长递增子序列
 
 [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
@@ -217,6 +244,42 @@ func numDistinct(s string, t string) int {
     return dp[n][m]
 }
 ```
+
+### 409. 最长回文串
+
+[409. 最长回文串](https://leetcode-cn.com/problems/longest-palindrome/)
+
+给定一个包含大写字母和小写字母的字符串 s ，返回 通过这些字母构造成的 最长的回文串 。
+
+在构造过程中，请注意 区分大小写 。比如 "Aa" 不能当做一个回文字符串。
+
+```go
+func longestPalindrome(s string) int {
+    cnt := map[rune]int{}
+    for _, c := range s {
+        cnt[c]++
+    }
+
+    ans := 0
+    meetOdd := false
+    for _, v := range cnt {
+        // 偶数，所有字符都可以用
+        if v % 2 == 0 {
+            ans += v
+        } else {
+            // 奇数
+            ans += (v - 1)
+            meetOdd = true
+        }
+    }
+
+    if meetOdd {
+        ans++
+    }
+    return ans
+}
+```
+
 ### 647. 回文子串
 
 [647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
@@ -291,5 +354,45 @@ func longestConsecutive(nums []int) int {
     }
 
     return maxCnt
+}
+```
+
+### 659. 分割数组为连续子序列
+[659. 分割数组为连续子序列](https://leetcode-cn.com/problems/split-array-into-consecutive-subsequences/)
+
+给你一个按升序排序的整数数组 num（可能包含重复数字），请你将它们分割成一个或多个长度至少为 3 的子序列，其中每个子序列都由连续整数组成。
+
+如果可以完成上述分割，则返回 true ；否则，返回 false 。
+
+```go
+func isPossible(nums []int) bool {
+    left := map[int]int{}
+    for _, num := range nums {
+        left[num]++
+    }
+
+    // 以num结尾的子序列的长度
+    endNum := map[int]int{}
+    for _, num := range nums {
+        if left[num] == 0 {
+            continue
+        }
+
+        // 如果num-1存在，则换成以num结尾
+        if endNum[num-1] > 0 {
+            left[num]--
+            endNum[num-1]--
+            endNum[num]++
+        } else if left[num+1] > 0 && left[num+2] > 0 {
+            left[num]--
+            left[num+1]--
+            left[num+2]--
+            endNum[num+2]++
+        } else {
+            return false
+        }
+
+    }
+    return true
 }
 ```

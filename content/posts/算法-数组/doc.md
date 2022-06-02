@@ -3,7 +3,7 @@ author: "Lambert Xiao"
 title: "算法-数组"
 date: "2022-03-13"
 summary: "与数组相关的算法题可以又各种骚操作"
-tags: ["算法", "动态规划"]
+tags: ["算法", "动态规划", "数组"]
 categories: [""]
 series: ["Themes Guide"]
 ShowToc: true
@@ -175,6 +175,55 @@ func merge(intervals [][]int) [][]int {
     }
 
     return ans
+}
+```
+
+### 57. 插入区间
+
+[57. 插入区间](https://leetcode-cn.com/problems/insert-interval/)
+给你一个 无重叠的 ，按照区间起始端点排序的区间列表。
+
+在列表中插入一个新的区间，你需要确保列表中的区间仍然有序且不重叠（如果有必要的话，可以合并区间）。
+
+```go
+func insert(intervals [][]int, newInterval []int) [][]int {
+    ans := [][]int{}
+    left, right := 0, 1
+
+    merged := false
+    for _, interval := range intervals {
+        // 没有交集
+        if interval[right] < newInterval[left] {
+            ans = append(ans, interval)
+        } else if interval[left] > newInterval[right] {
+            // 后面不会在遇到有重叠的区间了，所以合并完成
+            if !merged {
+                ans = append(ans, newInterval)
+                merged = true
+            }
+            ans = append(ans, interval)
+        } else {
+            // 需要合并
+            newInterval[left] = min(newInterval[left], interval[left])
+            newInterval[right] = max(newInterval[right], interval[right])
+        }
+    }
+
+    if !merged {
+        ans = append(ans, newInterval)
+    }
+
+    return ans
+}
+
+func max(x, y int) int {
+    if x > y { return x }
+    return y
+}
+
+func min(x, y int) int {
+    if x < y { return x }
+    return y
 }
 ```
 
@@ -541,6 +590,73 @@ func majorityElement(nums []int) int {
 }
 ```
 
+### 229. 求众数 II
+
+[229. 求众数 II](https://leetcode-cn.com/problems/majority-element-ii/)
+给定一个大小为 n 的整数数组，找出其中所有出现超过 ⌊ n/3 ⌋ 次的元素。
+
+
+```go
+func majorityElement(nums []int) []int {
+    if len(nums) < 2 {
+        return nums
+    }
+
+    candidate1, candidate2 := nums[0], nums[1]
+    cnt1, cnt2 := 0, 0
+
+    for _, num := range nums {
+        if num == candidate1 {
+            cnt1++
+            continue
+        }
+        if num == candidate2 {
+            cnt2++
+            continue
+        }
+
+        // 一号候选人没有票，则当前num成为候选人
+        if cnt1 == 0 {
+            candidate1 = num
+            cnt1 = 1
+            continue
+        }
+
+        // 二号候选人没有票，则当前num成为候选人
+        if cnt2 == 0 {
+            candidate2 = num
+            cnt2 = 1
+            continue
+        }
+
+        // 两人都有票，和当前num相互抵消
+        cnt1--
+        cnt2--
+    }
+
+    // 计算两个候选人的个数
+    cnt1, cnt2 = 0, 0
+    for _, num := range nums {
+        if num == candidate1 {
+            cnt1++
+        }
+        if num == candidate2 {
+            cnt2++
+        }
+    }
+
+    ans := []int{}
+    if cnt1 > len(nums) / 3 {
+        ans = append(ans, candidate1)
+    }
+    if candidate2 != candidate1 && cnt2 > len(nums) / 3 {
+        ans = append(ans, candidate2)
+    }
+
+    return ans
+}
+```
+
 ### 152. 乘积最大子数组
 
 [152. 乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
@@ -599,5 +715,282 @@ func wordBreak(s string, wordDict []string) bool {
     }
 
     return dp[size]
+}
+```
+
+### 164. 最大间距
+
+[164. 最大间距](https://leetcode-cn.com/problems/maximum-gap/)
+
+给定一个无序的数组 nums，返回 数组在排序之后，相邻元素之间最大的差值 。如果数组元素个数小于 2，则返回 0 。
+
+您必须编写一个在「线性时间」内运行并使用「线性额外空间」的算法。
+
+思路：
+
+1. 基数排序
+2. 假设有数组[3,6,9,1,11,23,4,52,33]
+3. 先找到最大值52, 52是个两位数，因此只要进行两轮排序
+4. 第一轮，对于个位上的数排序
+
+    ```
+    | 个位上的数 | 元素集合 |
+    | 0 | 
+    | 1 | 1, 11 
+    | 2 | 52 
+    | 3 | 3, 23, 33 
+    | 4 | 4 
+    | 5 | 
+    | 6 | 6 
+    | 7 | 
+    | 8 | 
+    | 9 | 9 
+    ```
+    因此，第一轮之后元素的顺序为：[1, 11, 52, 3, 23, 33, 4, 6, 9]
+
+5. 第二轮，对于十位上的数排序
+
+    ```
+    | 十位上的数 | 元素集合 |
+    | 0 | 1, 3, 4, 6, 9 
+    | 1 | 11 
+    | 2 | 23 
+    | 3 | 33 
+    | 4 | 
+    | 5 | 52 
+    | 6 | 
+    | 7 | 
+    | 8 | 
+    | 9 | 
+
+    因此，第二轮之后元素的顺序为：[1, 3, 4, 6, 9, 11, 23, 33, 52]
+    ```
+
+最终代码：
+
+```go
+func bsort(nums []int) {
+    n := len(nums)
+    tmp := make([]int, n)
+    maxVal := max(nums...)
+    for round := 1; round <= maxVal; round *= 10 {
+        cnt := [10]int{} // 
+        for _, num := range nums {
+            digit := num / round % 10
+            cnt[digit]++
+        }
+
+        for i := 1; i < 10; i++ {
+            cnt[i] += cnt[i-1]
+        }
+
+        // 从后往前放置所有的数，（从后往前是因为同一个位上可能有多个数）
+        for i := n - 1; i >= 0; i-- {
+            digit := nums[i] / round % 10
+            tmp[cnt[digit]-1] = nums[i]
+            cnt[digit]--
+        }
+        copy(nums, tmp)
+    }
+} 
+
+func maximumGap(nums []int) (ans int) {
+    n := len(nums)
+    if n < 2 {
+        return
+    }
+
+    bsort(nums)
+
+    for i := 1; i < n; i++ {
+        ans = max(ans, nums[i]-nums[i-1])
+    }
+    return
+}
+
+func max(a ...int) int {
+    res := a[0]
+    for _, v := range a[1:] {
+        if v > res {
+            res = v
+        }
+    }
+    return res
+}
+```
+
+### 907. 子数组的最小值之和
+
+[907. 子数组的最小值之和](https://leetcode-cn.com/problems/sum-of-subarray-minimums/)
+给定一个整数数组 arr，找到 min(b) 的总和，其中 b 的范围为 arr 的每个（连续）子数组。
+
+由于答案可能很大，因此 返回答案模 10^9 + 7 。
+
+思路：对于每一个nums[i], 分别向左右找到它的影响范围
+
+```go
+func sumSubarrayMins(arr []int) int {
+    n := len(arr)
+    mod := 1000000007
+    ans := 0
+    for i := 0; i < n; i++ {
+        l := i - 1
+        // 找到以arr[i]最为最小值的左边界
+        for l >= 0 && arr[i] < arr[l] {
+            l-- 
+        }
+        
+        r := i + 1
+        for r < n && arr[i] <= arr[r] {
+            r++
+        }
+
+        // 左边的个数*右边的个数能得到子数组的数量，*a[i]表示加上多少个a[i]
+        ans += (i - l) * (r - i) * arr[i]
+    }
+
+    return ans % mod
+}
+```
+
+### 26. 删除有序数组中的重复项
+
+[26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
+
+给你一个 升序排列 的数组 nums ，请你 原地 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。元素的 相对顺序 应该保持 一致 。
+
+由于在某些语言中不能改变数组的长度，所以必须将结果放在数组nums的第一部分。更规范地说，如果在删除重复项之后有 k 个元素，那么 nums 的前 k 个元素应该保存最终结果。
+
+将最终结果插入 nums 的前 k 个位置后返回 k 。
+不要使用额外的空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+通用解法：
+
+```go
+func removeDuplicates(nums []int) int {
+    // 移除重复项的通用函数
+    replace := func(k int) int {
+        // 下一个要被覆盖的位置
+        replaceIdx := 0
+        for _, num := range nums {
+            // replaceIdx < k 意味着直接跳过前k个
+            if replaceIdx < k || num != nums[replaceIdx-k] {
+                nums[replaceIdx] = num
+                replaceIdx++
+            }
+        }
+        return replaceIdx
+    }
+
+    return replace(1)
+}
+```
+
+### 80. 删除有序数组中的重复项 II
+
+[80. 删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
+
+给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 最多出现两次 ，返回删除后数组的新长度。
+
+不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+通用解法：
+
+```go
+func removeDuplicates(nums []int) int {
+    // 移除重复项的通用函数
+    replace := func(k int) int {
+        // 下一个要被覆盖的位置
+        replaceIdx := 0
+        for _, num := range nums {
+            // replaceIdx < k 意味着直接跳过前k个
+            if replaceIdx < k || num != nums[replaceIdx-k] {
+                nums[replaceIdx] = num
+                replaceIdx++
+            }
+        }
+        return replaceIdx
+    }
+
+    return replace(2)
+}
+```
+
+### 48. 旋转图像
+
+[48. 旋转图像](https://leetcode-cn.com/problems/rotate-image/)
+
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+
+    // 每次元素交换都会涉及到n^2/4个元素，所以循环时i，j不需要完整遍历
+    for i := 0; i < n/2; i++ {
+        for j := 0; j < (n + 1) / 2; j++ {
+            temp := matrix[i][j]
+            matrix[i][j] = matrix[n-j-1][i]
+            matrix[n-j-1][i] = matrix[n-i-1][n-j-1]
+            matrix[n-i-1][n-j-1] = matrix[j][n-i-1]
+            matrix[j][n-i-1] = temp
+        }
+    }
+}
+```
+
+### 561. 数组拆分
+
+[561. 数组拆分 I](https://leetcode-cn.com/problems/array-partition-i/)
+
+给定长度为 2n 的整数数组 nums ，你的任务是将这些数分成 n 对, 例如 (a1, b1), (a2, b2), ..., (an, bn) ，使得从 1 到 n 的 min(ai, bi) 总和最大。
+
+返回该 最大总和 。
+
+```go
+func arrayPairSum(nums []int) int {
+    sort.Ints(nums)
+    ans := 0
+    for i := 0; i < len(nums); i += 2 {
+        ans += nums[i]
+    }
+    return ans
+}
+```
+
+
+
+### 剑指 Offer 03. 数组中重复的数字
+
+[剑指 Offer 03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
+
+找出数组中重复的数字。
+
+在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+
+思路:
+
+值和下标相关联，将nums[i]和nums[nums[i]]交换，即让值和索引相同
+
+
+```go
+func findRepeatNumber(nums []int) int {
+    i := 0
+    for i < len(nums) {
+        if nums[i] == i {
+            i++
+            continue
+        }
+
+        if nums[i] == nums[nums[i]] {
+            return nums[i]
+        }
+
+        nums[i], nums[nums[i]] = nums[nums[i]], nums[i]
+    }
+
+    return 0
 }
 ```

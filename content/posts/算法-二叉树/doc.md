@@ -134,6 +134,48 @@ func pathSum(root *TreeNode, targetSum int) int {
 }
 ```
 
+### 235. 二叉搜索树的最近公共祖先
+
+[235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val   int
+ *     Left  *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+        return nil
+    }
+
+    if root == p || root == q {
+        return root
+    }
+
+    // 在左边找
+    if p.Val < root.Val && q.Val < root.Val {
+        return lowestCommonAncestor(root.Left, p, q)
+    }
+    // 在右边找
+    if p.Val > root.Val && q.Val > root.Val {
+        return lowestCommonAncestor(root.Right, p, q)
+    }
+
+    // 一大一小的公共祖先一定是root
+    return root
+}
+```
+
 ### 236. 二叉树的最近公共祖先
 
 [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
@@ -636,3 +678,233 @@ func sumNumbers(root *TreeNode) int {
     return dfs(root, 0)
 }
 ```
+
+### 109. 有序链表转换二叉搜索树
+
+[109. 有序链表转换二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/)
+
+思路：
+
+1. 找到链表的中点，一分为二
+2. 中点为head，并且递归生成左右子树
+3. 当 `left == right` 时，证明已经构建完成（可以这么理解，left和right是左闭右开，当left==right时，证明left已经超过边界了）
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func sortedListToBST(head *ListNode) *TreeNode {
+    return build(head, nil)
+}
+
+func build(left *ListNode, right *ListNode) *TreeNode {
+    if left == right {
+        return nil
+    }
+    
+    mid := findMid(left, right)
+    head := &TreeNode{Val: mid.Val}
+    head.Left = build(left, mid)
+    head.Right = build(mid.Next, right)
+    return head
+}
+
+func findMid(left, right *ListNode) *ListNode {
+    s, f := left, left
+    for f != right && f.Next != right {
+        s = s.Next
+        f = f.Next.Next
+    }
+    return s
+}
+```
+
+### 450. 删除二叉搜索树中的节点
+
+[450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+
+给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+
+一般来说，删除节点可分为两个步骤：
+
+首先找到需要删除的节点；
+如果找到了，删除它。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func deleteNode(root *TreeNode, key int) *TreeNode {
+    if root == nil {
+        return nil
+    }
+
+    if root.Val == key {
+        // 叶子节点，直接删除
+        if root.Left == nil && root.Right == nil {
+            // 当前节点被删，返回空
+            return nil
+        }
+
+        // 左子树为空，右子树上来继位
+        if root.Left == nil {
+            return root.Right
+        }
+        // 右子树为空，左子树上来继位
+        if root.Right == nil {
+            return root.Left
+        }
+        // 左右都不为空，将左子树的头节点接到右子树里最左节点的左节点上
+        leftRoot := root.Left
+        leftestNode := root.Right // 右子树里最左边的节点
+        for leftestNode.Left != nil {
+            leftestNode = leftestNode.Left
+        }
+        leftestNode.Left = leftRoot
+        return root.Right
+    }
+
+    if root.Val < key {
+        root.Right = deleteNode(root.Right, key)
+    } else {
+        root.Left = deleteNode(root.Left, key)
+    }
+    
+    return root
+}
+```
+
+### 297. 二叉树的序列化与反序列化
+
+[297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+
+序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+type Codec struct {}
+
+func Constructor() Codec {
+    c := Codec{}
+    return c
+}
+
+// Serializes a tree to a single string.
+func (c *Codec) serialize(root *TreeNode) string {
+    ans := []string{}
+    q := []*TreeNode {root}
+    for len(q) != 0 {
+        node := q[0]
+        q = q[1:]
+
+        if node != nil {
+            ans = append(ans, strconv.Itoa(node.Val))
+            q = append(q, node.Left)
+            q = append(q, node.Right)
+        } else {
+            ans = append(ans, "X")
+        }
+    }
+    return strings.Join(ans, ",")
+}
+
+// Deserializes your encoded data to tree.
+func (c *Codec) deserialize(data string) *TreeNode {    
+    if data == "X" { return nil } 
+    nodes := strings.Split(data, ",")
+    v, _ := strconv.Atoi(nodes[0])
+    root := &TreeNode{Val: v}
+    q := []*TreeNode {root}
+    curr := 1
+
+    for curr < len(nodes) {
+        node := q[0]
+        q = q[1:]
+
+        leftVal := nodes[curr]
+        if leftVal != "X" {
+            _leftVal, _ := strconv.Atoi(leftVal)
+            leftNode := &TreeNode{Val: _leftVal}
+            node.Left = leftNode
+            q = append(q, leftNode)
+        }
+
+        rightVal := nodes[curr+1]
+        if rightVal != "X" {
+            _rightVal, _ := strconv.Atoi(rightVal)
+            rightNode := &TreeNode{Val: _rightVal}
+            node.Right = rightNode
+            q = append(q, rightNode)
+        }
+        curr += 2
+    }
+
+    return root
+}
+
+/**
+ * Your Codec object will be instantiated and called as such:
+ * ser := Constructor();
+ * deser := Constructor();
+ * data := ser.serialize(root);
+ * ans := deser.deserialize(data);
+ */
+```
+
+### 700. 二叉搜索树中的搜索
+
+[700. 二叉搜索树中的搜索](https://leetcode-cn.com/problems/search-in-a-binary-search-tree/)
+
+给定二叉搜索树（BST）的根节点 root 和一个整数值 val。
+
+你需要在 BST 中找到节点值等于 val 的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 null 。
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func searchBST(root *TreeNode, val int) *TreeNode {
+    if root == nil || root.Val == val {
+        return root
+    }
+    
+    if val <= root.Val {
+        return searchBST(root.Left, val)
+    }
+    
+    return searchBST(root.Right, val)
+}
+```
+
