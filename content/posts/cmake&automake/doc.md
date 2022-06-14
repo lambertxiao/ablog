@@ -1,7 +1,7 @@
 ---
 author: "Lambert Xiao"
 title: "CMake和Automake"
-date: "2022-03-06"
+date: "2022-06-10"
 summary: "在C和C++的开源项目里没少见他俩"
 tags: ["cmake", "automake"]
 categories: [""]
@@ -32,6 +32,7 @@ cmake和automake本质上都是用来生成Makefile的工具，为啥Makefile需
 
 ## 功能对比
 
+{{< rawhtml >}}
 <table>
 <tr>
   <td>命令</td>
@@ -190,3 +191,4 @@ cmake和automake本质上都是用来生成Makefile的工具，为啥Makefile需
   <td>install</td>
 </tr>
 </table>
+{{< /rawhtml >}}
