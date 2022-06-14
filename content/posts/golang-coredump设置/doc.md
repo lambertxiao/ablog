@@ -1,7 +1,7 @@
 ---
 author: "Lambert Xiao"
 title: "Golang-Coredump设置"
-date: "2022-06-014"
+date: "2022-06-14"
 summary: "定位crash问题少不了"
 tags: ["golang"]
 categories: ["golang"]
