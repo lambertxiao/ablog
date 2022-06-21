@@ -87,3 +87,9 @@ Showing top 20 nodes out of 34
 - cum%：与程序持有总内存的占比
 
 ![](../heap.png)
+
+### 以web方式打开
+
+```
+go tool pprof -http=:9999 heap.pprof
+```
