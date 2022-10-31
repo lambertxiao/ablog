@@ -1,10 +1,13 @@
-
 ---
-layout: post
+author: "Lambert Xiao"
 title: "Kafka的基本命令"
-date: 2019-08-26
-tags: [Kafka]
-comments: false
+date: "2019-08-26"
+summary: ""
+tags: ["kafka"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
 ---
 
 ## 脚本命令使用

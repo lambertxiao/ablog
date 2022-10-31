@@ -1,7 +1,7 @@
 ---
 author: "Lambert Xiao"
 title: "安装新版gcc"
-date: "2022-11-01"
+date: "2022-10-31"
 summary: ""
 tags: ["c++"]
 categories: [""]

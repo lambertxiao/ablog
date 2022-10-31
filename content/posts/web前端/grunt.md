@@ -1,9 +1,13 @@
 ---
-layout: post
+author: "Lambert Xiao"
 title: "Grunt"
-date: 2018-09-04
-excerpt: "Grunt是一个基于NodeJS，可用于自动化构建、测试、生成文档的项目管理工具。"
-tags: [Javascript, Grunt]
+date: "2018-09-04"
+summary: "Grunt是一个基于NodeJS，可用于自动化构建、测试、生成文档的项目管理工具。"
+tags: ["Javascript", "Grunt"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
 ---
 
 # Grunt 杂记

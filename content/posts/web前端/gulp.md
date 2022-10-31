@@ -1,9 +1,13 @@
 ---
-layout: post
+author: "Lambert Xiao"
 title: "Gulp"
-date: 2018-09-04
-excerpt: "Gulp 是一个构建工具，可以通过它自动执行网站开发过程中的公共任务，比如编译 SASS/Less，编译压缩混淆 JavaScript,，合并编译模板和版本控制等。因为 gulp 是基于 Node.js 构建的，所以 gulp 源文件和开发者自己定义的 gulpfile 都被写进 JavaScript 里，前端开发者可以用自己熟悉的语言来编写 gulp 任务。"
-tags: [Javascript, Gulp]
+date: "2018-09-04"
+summary: "Gulp 是一个构建工具，可以通过它自动执行网站开发过程中的公共任务，比如编译 SASS/Less，编译压缩混淆 JavaScript,，合并编译模板和版本控制等。因为 gulp 是基于 Node.js 构建的，所以 gulp 源文件和开发者自己定义的 gulpfile 都被写进 JavaScript 里，前端开发者可以用自己熟悉的语言来编写 gulp 任务。"
+tags: ["Javascript", "Gulp"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
 ---
 
 # Gulp 杂记

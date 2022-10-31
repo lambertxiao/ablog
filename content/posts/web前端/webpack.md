@@ -1,9 +1,13 @@
 ---
-layout: post
+author: "Lambert Xiao"
 title: "Webpack"
-date: 2018-09-04
-excerpt: "webpack 是一个模块打包器(module bundler)。打包器(bundler)帮助您取得准备用于部署的 JavaScript 和样式表，将它们转换为适合浏览器的可用格式。"
-tags: [Javascript, Webpack]
+date: "2018-09-04"
+summary: "webpack 是一个模块打包器(module bundler)。打包器(bundler)帮助您取得准备用于部署的 JavaScript 和样式表，将它们转换为适合浏览器的可用格式。"
+tags: ["Javascript", "Webpack"]
+categories: [""]
+series: ["Themes Guide"]
+ShowToc: true
+TocOpen: true
 ---
 
 # Webpack 杂记
