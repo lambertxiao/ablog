@@ -46,3 +46,36 @@ make -j 8
 ```
 make install
 ```
+
+## 设置环境变量
+
+```
+export CC=/usr/local/bin/gcc
+export CXX=/usr/local/bin/g++
+```
+
+## 查看默认编译选项
+
+echo "" | gcc -v -x c++ -E -
+
+## 解决GLIBCXX之类的错误
+
+这是因为glibc++的版本太老，先查找
+
+```
+whereis libstdc++.so.6
+
+// /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
+ls -al /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
+// /usr/lib/x86_64-linux-gnu/libstdc++.so.6 -> libstdc++.so.6.0.24
+```
+
+在gcc的build目录下查找新编译出来的libstdc++.so
+
+```
+find . -name "*libstdc++*"
+```
+
+将找到的libstdc++.so.6.0.30放到/usr/lib/x86_64-linux-gnu/下，并通过软链替换掉原本的指向
