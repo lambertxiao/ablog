@@ -3,7 +3,7 @@ author: "Lambert Xiao"
 title: "如何使用libaio读写磁盘"
 date: "2023-03-25"
 summary: ""
-tags: [""]
+tags: ["storage"]
 categories: [""]
 series: ["Themes Guide"]
 ShowToc: true
@@ -27,6 +27,15 @@ libaio是Linux异步I/O文件操作库，它能够提供更高效的文件异步
 ```
 apt install libaio-dev
 ```
+
+接口介绍
+
+- io_setup：用于初始化异步IO环境并返回其句柄。
+- io_destroy：用于清除异步IO环境并关闭相应的文件描述符。
+- io_getevents：用于等待指定数量的IO事件（如读、写或错误）并将它们存储在指定的缓冲区中。
+- io_prep_pread：用于为读取一个文件块准备异步IO操作。
+- io_prep_pwrite：用于为写入一个文件块准备异步IO操作。
+- io_submit：用于提交一或多个异步IO请求，并将其排入异步IO环境中，等待事件处理。
 
 下面使用libaio封装一个DiskUtil实现对文件的基本读写
 
