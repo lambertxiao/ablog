@@ -1,7 +1,7 @@
 ---
 author: "Lambert Xiao"
 title: "cmake-简单指北"
-date: "2023-03-29"
+date: "2023-03-28"
 summary: "入坑C/C++前的一座大山"
 tags: ["cmake"]
 categories: [""]
