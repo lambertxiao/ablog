@@ -18,6 +18,9 @@ TocOpen: true
 
 下载googletest库，并编译安装
 
+> googletest源码地址：https://github.com/google/googletest
+> googletest文档地址：https://google.github.io/googletest/
+
 ## 怎么运行当前示例
 
 ```
