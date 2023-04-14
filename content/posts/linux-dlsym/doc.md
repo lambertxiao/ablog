@@ -1,7 +1,7 @@
 ---
 author: "Lambert Xiao"
 title: "Linux-dlsym"
-date: "2023-04-14"
+date: "2023-04-13"
 summary: "dlsym(dynamic link symbol)"
 tags: ["linux"]
 categories: [""]
@@ -9,6 +9,11 @@ series: ["Themes Guide"]
 ShowToc: true
 TocOpen: true
 ---
+
+## 前言
+
+最近研究c++协程库libco的时候发现，它内部大量运用了dlsym技术，对如connect, sendto, recv, read, write等系统调用做了hook, 从而使得libco能在单线程的情况下调度协程。出与对dlsym技术的学习总结，出了这篇博文
+
 
 ## dlsym概述
 
