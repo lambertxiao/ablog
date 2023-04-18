@@ -98,7 +98,7 @@ int main() {
 
 执行后可以发现，我们通过dlsym调用到了系统库里的printf函数
 
-### dlsym + RTLD_NEXT
+### dlsym + RTLD_NEXT + LD_PRELOAD
 
 与RTLD_DEFAULT不同的点在于，RTLD_NEXT表示查找symbol的时候，跳过所在的动态链接库，继续去别的lib中找到symbol的位置，找到了就返回。
 
@@ -161,3 +161,72 @@ LD_PRELOAD=./libhook.so ./main
 ```
 
 执行后可以发现，我们通过LD_PRELOAD前置了一个动态链接库，成功地实现了对系统库里的malloc函数进行hook
+
+### dlsym + RTLD_NEXT
+
+在实际使用libco的过程中，并没有发现需要使用LD_PRELOAD，那有没有办法不需要用LD_PRELOAD也可以hook掉系统函数呢，研究发现，可以用如下方式来实现
+
+先hook掉malloc函数
+
+```c++
+// hook.cpp
+#include <stdio.h>
+#include <stdint.h>
+#include <dlfcn.h>
+#include <memory.h>
+
+#define ENABLE_HOOK_FUNC(name) \
+  if (!g_sys_##name) { \
+    g_sys_##name = (sys_##name##_t)dlsym(RTLD_NEXT, #name); \
+  }
+
+typedef void* (*sys_malloc_t)(size_t size);
+static sys_malloc_t g_sys_malloc = NULL;
+
+extern "C" {
+void* malloc(size_t size) {
+  ENABLE_HOOK_FUNC(malloc);
+  printf("invoke malloc hook function\n");
+  char* p = (char*)g_sys_malloc(size);
+  memset(p, '0', sizeof(char)*size);
+  return p;
+}
+}
+```
+
+将hook.cpp编译成动态库
+
+```
+g++ -fPIC -shared -o libhook.so hook.cpp  -ldl
+```
+
+```c++
+// main.cpp
+#include <memory>
+
+int main() {
+  printf("before malloc\n");
+  char* buf = (char*)malloc(sizeof(char)*24);
+  if (!buf) {
+    printf("malloc error\n");
+  }
+  printf("after malloc\n");
+  printf("%s\n", buf);
+  return 0;
+}
+```
+
+在编译main.cpp的时候，带上该动态库
+
+```
+g++ -std=c++11 -o main main.cpp -L /root/workspace/dlsym-demo/ -lhook
+```
+
+直接执行`./main`，可以发现hook生效了，malloc出来的内存的内容都被设置'0'
+
+```
+before malloc
+invoke malloc hook function
+after malloc
+000000000000000000000000�
+```
