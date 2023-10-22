@@ -7,4 +7,5 @@ git init
 git add .
 git commit -m "update blog"
 git remote add origin git@github.com:lambertxiao/lambertxiao.github.io.git
+git checkout -b master
 git push origin master -f
