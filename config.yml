@@ -90,7 +90,7 @@ params:
     appendFilePath: true # to append file path to Edit link
 
   label:
-    text: "My Blog"
+    text: "Lambert's Blog"
     icon: /avatar.jpeg
     iconHeight: 35
 
@@ -128,9 +128,9 @@ markup:
   highlight:
     # style: base16/solarized-dark
     style: vim
-  # goldmark:
-  #   renderer:
-  #     unsafe: true
+  goldmark:
+    renderer:
+      unsafe: true
   #   highlight:
   #     # anchorLineNos: true
   #     codeFences: true
